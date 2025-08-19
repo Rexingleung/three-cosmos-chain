@@ -41,29 +41,40 @@
 - npm 或 yarn
 - 本地运行的Cosmos链（通过ignite启动）
 
-### 安装步骤
+### 方法一：使用快速安装脚本（推荐）
 
-1. 克隆项目
 ```bash
+# 1. 克隆项目
 git clone https://github.com/Rexingleung/three-cosmos-chain.git
 cd three-cosmos-chain
+
+# 2. 给脚本执行权限
+chmod +x scripts/setup.sh
+
+# 3. 运行安装脚本
+./scripts/setup.sh
+
+# 4. 启动开发服务器
+npm run dev
 ```
 
-2. 安装依赖
+### 方法二：手动安装
+
 ```bash
+# 1. 克隆项目
+git clone https://github.com/Rexingleung/three-cosmos-chain.git
+cd three-cosmos-chain
+
+# 2. 安装依赖
 npm install
 # 或
 yarn install
-```
 
-3. 启动开发服务器
-```bash
+# 3. 启动开发服务器
 npm run dev
 # 或
 yarn dev
 ```
-
-4. 打开浏览器访问 `http://localhost:5173`
 
 ## 本地链配置
 
@@ -80,6 +91,126 @@ ignite chain serve
 - **链ID**: aaa
 
 如需修改配置，请编辑 `src/config/chain.js` 文件。
+
+## 故障排除
+
+### 🚨 常见问题解决
+
+#### 问题1：`Failed to resolve import` 错误
+
+**错误信息**：
+```
+Failed to resolve import "./components/ChainStatus" from "src/App.jsx". Does the file exist?
+```
+
+**解决方案**：
+```bash
+# 使用自动修复脚本
+chmod +x scripts/fix-common-issues.sh
+./scripts/fix-common-issues.sh
+
+# 或手动修复
+rm -rf node_modules
+npm cache clean --force
+npm install
+```
+
+#### 问题2：应用无法连接到Cosmos链
+
+**症状**：界面显示"链连接失败"
+
+**解决方案**：
+1. 确保本地Cosmos链正在运行：
+   ```bash
+   ignite chain serve
+   ```
+
+2. 检查端口是否被占用：
+   ```bash
+   lsof -i :26657
+   lsof -i :1317
+   ```
+
+3. 验证链是否正常响应：
+   ```bash
+   curl http://localhost:26657/status
+   curl http://localhost:1317/cosmos/base/tendermint/v1beta1/node_info
+   ```
+
+#### 问题3：钱包创建或导入失败
+
+**可能原因**：
+- 助记词格式不正确
+- 网络连接问题
+- 浏览器缓存问题
+
+**解决方案**：
+1. 清除浏览器缓存和Local Storage
+2. 检查助记词是否为12或24个单词
+3. 确保助记词之间用空格分隔
+4. 尝试使用无痕模式
+
+#### 问题4：交易发送失败
+
+**可能原因**：
+- 账户余额不足
+- Gas费设置过低
+- 接收地址格式错误
+- 网络连接不稳定
+
+**解决方案**：
+1. 检查钱包余额
+2. 使用水龙头申请测试代币
+3. 验证接收地址格式（应以cosmos开头）
+4. 重新连接钱包
+
+#### 问题5：构建失败
+
+**错误信息**：
+```
+Build failed with errors
+```
+
+**解决方案**：
+```bash
+# 完整重新安装
+rm -rf node_modules package-lock.json yarn.lock
+npm install
+
+# 或使用修复脚本
+./scripts/fix-common-issues.sh
+```
+
+### 🛠 调试技巧
+
+#### 开启详细日志
+
+1. 打开浏览器开发者工具（F12）
+2. 查看Console标签页的错误信息
+3. 检查Network标签页的网络请求状态
+
+#### 网络连接测试
+
+```bash
+# 测试RPC连接
+curl http://localhost:26657/status
+
+# 测试REST API
+curl http://localhost:1317/cosmos/base/tendermint/v1beta1/node_info
+
+# 测试水龙头
+curl -X POST http://localhost:4500 -d '{"address":"your_address_here"}'
+```
+
+#### 环境变量检查
+
+创建 `.env.local` 文件并自定义配置：
+```env
+VITE_CHAIN_ID=aaa
+VITE_RPC_ENDPOINT=http://localhost:26657
+VITE_REST_ENDPOINT=http://localhost:1317
+VITE_FAUCET_ENDPOINT=http://localhost:4500
+```
 
 ## 使用指南
 
@@ -177,6 +308,9 @@ npm run preview
 
 # 代码检查
 npm run lint
+
+# 问题修复（自动修复常见问题）
+./scripts/fix-common-issues.sh
 ```
 
 ### 环境变量
@@ -209,9 +343,15 @@ VITE_FAUCET_ENDPOINT=http://localhost:4500
 如有问题或建议，请通过以下方式联系：
 
 - 创建 [Issue](https://github.com/Rexingleung/three-cosmos-chain/issues)
-- 发送邮件至项目维护者
+- 查看 [项目文档](https://github.com/Rexingleung/three-cosmos-chain)
 
 ## 更新日志
+
+### v1.0.1 (2025-08-19)
+- 修复组件导入问题
+- 添加故障排除指南
+- 创建自动修复脚本
+- 改进错误处理
 
 ### v1.0.0 (2025-08-19)
 - 初始版本发布
