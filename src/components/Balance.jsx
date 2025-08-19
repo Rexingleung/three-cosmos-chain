@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Spin, Alert, Button, Empty, Divider } from 'antd'
+import { Card, Spin, Alert, Button, Empty, Divider, message } from 'antd'
 import { ReloadOutlined, WalletOutlined } from '@ant-design/icons'
 import { cosmosService } from '../services/cosmosService.js'
 import { formatBalance } from '../utils/wallet.js'
